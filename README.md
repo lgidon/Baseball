@@ -4,37 +4,45 @@ A lightweight, responsive web dashboard built with Python and Flask that deliver
 
 ---
 
+## 🏗️ Modular Architecture & Separation of Concerns
+
+The codebase is engineered with a strict **Separation of Concerns** to enhance maintainability, scale data streams independently, and ensure the UI never suffers network-blocking lag.
+
+* **`config.py`** — Manages user dashboard preference structures, theme states, global variables, and secure HTTP Basic Authentication locks.
+* **`mlb_api.py`** — An isolated network driver containing low-level HTTP client connections targeting public `statsapi.mlb.com` endpoints.
+* **`cache_manager.py`** — The state orchestrator. Houses memory locks, multi-stage repositories, and background synchronization loops.
+* **`app.py`** — A lightweight Flask entry-point handling routing logic and delivering cached context blocks directly to UI layouts.
+
+---
+
+## ⚡ Multi-Stage Hybrid Caching Engine
+
+To minimize external network footprints and bypass MLB API rate limits, data is parsed using a **hybrid caching engine**:
+
+1.  **Eager Bulk Sync (Fast-Moving Data):** Game linescores, venue states, ballpark weather feeds, and divisional tables are pulled *league-wide* in single bulk requests by an automated background worker thread. These refresh dynamically every **$X$ minutes** (configured via the Admin panel).
+2.  **Lazy On-Demand Sync (Slow-Moving Data):** Active team rosters (24-hour TTL expiration window) and 15-day lookahead match schedules (12-hour TTL expiration window) are pulled lazily only when a user selects a specific team, caching subsequent requests instantly.
+
+---
+
 ## 🚀 Execution & Deployment Options
 
 ### 1. Run Natively with Python
-*Best for rapid local development, styling tweaks, or debugging code.*
+*Best for rapid local development, layout styling tweaks, or debugging.*
 
 * **Install Dependencies:**
     ```bash
     pip install -r requirements.txt
     ```
-* **Launch the Server:**
+* **Launch the Server with Runtime Security Environment Variables:**
     ```bash
-    python app.py
+    ADMIN_USER="admin" ADMIN_PASSWORD="yourpassword" FLASK_SECRET_KEY="devkey" python app.py
     ```
 * **Access App:** Open your web browser to **`http://127.0.0.1:5000/`**
 
 ---
 
-### 2. Pull the Pre-Built Image from Docker Hub
-*Best for instant execution without needing Python or the source files stored locally.*
-
-* **Pull and Run the Container:**
-    ```bash
-    # Replace 'yourusername' with your actual Docker Hub registry username
-    docker run -d -p 5000:5000 yourusername/baseball-dash:latest
-    ```
-* **Access App:** Open your web browser to **`http://127.0.0.1:5000/`**
-
----
-
-### 3. Build the Container via Local Dockerfile
-*Best for isolated production testing or validating local architecture changes.*
+### 2. Build the Container via Local Dockerfile
+*Best for isolated production testing or validating local infrastructure adjustments.*
 
 * **Compile the Local Image:**
     ```bash
@@ -42,26 +50,28 @@ A lightweight, responsive web dashboard built with Python and Flask that deliver
     ```
 * **Launch the Container:**
     ```bash
-    docker run -d -p 5000:5000 baseball-dash
+    docker run -d -p 5000:5000 -e ADMIN_USER="admin" -e ADMIN_PASSWORD="yourpassword" baseball-dash
     ```
 * **Access App:** Open your web browser to **`http://127.0.0.1:5000/`**
 
 ---
 
-## 🛠️ Architecture & Core Feature Set
+### 3. Deploy to a Kubernetes (K8s) Cluster
+*Best for production simulation, automated scaling, and cluster-wide secrets management.*
 
-The interface renders an optimized, mobile-responsive **4-Quadrant Grid** designed for quick readability:
-
-* **Quadrant 1: Live Scoreboard & Weather** Real-time game states (linescores, current innings) coupled with live ballpark atmospheric metrics (temperature, conditions, wind velocity) pulled dynamically via the active venue's game feed.
-* **Quadrant 2: Upcoming Schedule** A forward-looking lookahead tracking the selected team's next 5 matches, locations, and home/away orientations over the upcoming weeks.
-* **Quadrant 3: Division Standings** Contextual division tables detailing Wins, Losses, and Games Back (GB) metrics with your selected team highlighted inline for immediate context.
-* **Quadrant 4: Active Team Roster** A height-stabilized, scrollable panel matching active squads with custom color badges mapping position classes (e.g., Pitchers vs. Position Players).
+* **Apply the Configuration Manifest (Includes Secrets, Deployments, and Services):**
+    ```bash
+    kubectl apply -f k8s-deployment.yaml
+    ```
+* **Access App (Standard Local Cluster IP):** Open your web browser to **`http://localhost:30080`**
+* **Access App (Minikube proxy tool wrapper):** ```bash
+    minikube service baseball-dash-service
+    ```
 
 ---
 
-## ⚙️ Persistent Configurations & Future Backlog
-*As this project advances, we are tracking the following architectural scaling benchmarks:*
+## 🔒 Accessing the Secure Admin Page
 
-- [ ] **State Management & Session Persistence:** Integrate Flask-Session or browser local storage so the dashboard implicitly remembers a user's chosen team across page refreshes and browser restarts.
-- [ ] **API Caching Layer:** Implement server-side caching (e.g., Flask-Caching) for slow-moving data points like Standings and Rosters to drastically reduce external network overhead.
-- [ ] **Player Metrics Lookup:** Inject click events on the active roster list to dynamically fetch individual player season logs and stat cards.
+The configuration admin dashboard is located at **`http://127.0.0.1:5000/admin`** (or port `30080` in Kubernetes). 
+
+Upon navigating to this route, your browser will trigger an automated HTTP Basic Authentication prompt requiring the `ADMIN_USER` and `ADMIN_PASSWORD` keys injected during execution initialization. Inside this portal, you can customize layout accent themes, user greetings, and real-time cache interval rates.
