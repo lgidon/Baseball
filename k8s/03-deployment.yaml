@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: baseball-dash-deployment
+  namespace: default
+  labels:
+    app: baseball-dash
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: baseball-dash
+  template:
+    metadata:
+      labels:
+        app: baseball-dash
+    spec:
+      containers:
+      - name: baseball-dash
+        image: yourusername/baseball-dash:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+        env:
+        - name: SYNC_INTERVAL_MINS
+          valueFrom:
+            configMapKeyRef:
+              name: baseball-dash-config
+              key: SYNC_INTERVAL_MINS
+        - name: ADMIN_USER
+          valueFrom:
+            secretKeyRef:
+              name: baseball-dash-auth
+              key: ADMIN_USER
+        - name: ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: baseball-dash-auth
+              key: ADMIN_PASSWORD
+        - name: FLASK_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: baseball-dash-auth
+              key: FLASK_SECRET_KEY
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 5000
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 10

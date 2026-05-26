@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: baseball-dash-config
+  namespace: default
+data:
+  DEFAULT_THEME_COLOR: "dark"
+  SYNC_INTERVAL_MINS: "5"
