@@ -74,3 +74,26 @@ def fetch_team_roster(team_id):
     except Exception as e:
         print(f"🚨 API Error fetching team roster context for {team_id}: {e}")
     return players
+
+def fetch_team_schedule(team_id):
+    """Queries individual forward-looking schedule sheets on demand."""
+    import datetime
+    start_date = (datetime.date.today() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+    end_date = (datetime.date.today() + datetime.timedelta(days=15)).strftime('%Y-%m-%d')
+    url = f"https://statsapi.mlb.com/api/v1/schedule?sportId=1&teamId={team_id}&startDate={start_date}&endDate={end_date}"
+    
+    upcoming = []
+    try:
+        res = requests.get(url, timeout=5).json()
+        for date_entry in res.get('dates', []):
+            for g in date_entry.get('games', []):
+                if len(upcoming) < 5:
+                    upcoming.append({
+                        'date': g['gameDate'][:10],
+                        'opponent': g['teams']['away']['team']['name'] if g['teams']['home']['team']['id'] == int(team_id) else g['teams']['home']['team']['name'],
+                        'venue': g['venue']['name'],
+                        'is_home': g['teams']['home']['team']['id'] == int(team_id)
+                    })
+    except Exception as e:
+        print(f"🚨 API Error fetching schedule lookahead for team {team_id}: {e}")
+    return upcoming
