@@ -18,4 +18,5 @@ COPY . .
 # Expose a commonly used port (change if your app uses another)
 EXPOSE 5000
 
-CMD ["python", "app.py"]
+# CMD ["python", "app.py"]
+CMD ["gunicorn", "--workers", "4", "--bind", "0.0.0.0:5000", "app:app"]
