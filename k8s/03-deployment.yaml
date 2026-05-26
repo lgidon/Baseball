@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: baseball-dash
-        image: gidil/baseball-dash:latest
+        image: gidil/baseball-dash:v2.0.1
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
