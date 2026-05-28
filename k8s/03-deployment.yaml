@@ -48,18 +48,30 @@ spec:
           requests:
             cpu: "250m"
             memory: "256Mi"
+        startupProbe:
+          httpGet:
+            path: /live  # Can use the simple liveness endpoint
+            port: 5000
+          failureThreshold: 10  # Try up to 10 times
+          periodSeconds: 3
         livenessProbe:
           httpGet:
-            path: /
+            path: /live
             port: 5000
-          initialDelaySeconds: 20
           periodSeconds: 20
           timeoutSeconds: 5
         readinessProbe:
           httpGet:
-            path: /
+            path: /ready
             port: 5000
-          initialDelaySeconds: 15
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 3
+
+
+# --- LIFECYCLE HOOKS ---
+        lifecycle:
+          preStop:
+            httpGet:
+              path: /prepare-shutdown
+              port: 5000
