@@ -132,11 +132,13 @@ def test_index_missing_team_name(mock_get_teams, mock_compile_data, client):
 @patch.dict('config.SETTINGS', {
     "user_name": "Baseball Fan",
     "theme_color": "dark",
-    "sync_interval_mins": 5
+    "sync_interval_mins": 5,
+    "admin_user": "test_admin",
+    "admin_password": "test_password"
 })
 def test_admin_get_authenticated(mock_start_worker, client):
     with captured_templates(flask_app) as templates:
-        response = client.get('/admin')
+        response = client.get('/admin', auth=('test_admin', 'test_password'))
         assert response.status_code == 200
         template, context = templates[0]
         assert template.name == 'admin.html'
@@ -154,13 +156,15 @@ def test_admin_post_update_settings(mock_start_worker, client):
         config_module.SETTINGS.update({
             "user_name": "Old Name",
             "theme_color": "light",
-            "sync_interval_mins": 10
+            "sync_interval_mins": 10,
+            "admin_user": "test_admin",
+            "admin_password": "test_password"
         })
         response = client.post('/admin', data={
             'user_name': 'New Fan',
             'theme_color': 'blue',
             'sync_interval_mins': '7'
-        }, follow_redirects=True)
+        }, auth=('test_admin', 'test_password'), follow_redirects=True)
         assert response.status_code == 200
         assert config_module.SETTINGS['user_name'] == 'New Fan'
         assert config_module.SETTINGS['theme_color'] == 'blue'
