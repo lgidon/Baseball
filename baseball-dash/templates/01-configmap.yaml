@@ -4,5 +4,6 @@ metadata:
   name: baseball-dash-config
   namespace: default
 data:
-  DEFAULT_THEME_COLOR: "dark"
-  SYNC_INTERVAL_MINS: "5"
+  USER_NAME: {{ .Values.userName | quote }}
+  THEME_COLOR: {{ .Values.themeColor | quote }}
+  SYNC_INTERVAL_MINS: {{ .Values.syncIntervalMins | quote }}

@@ -1,0 +1,9 @@
+# Development overrides only.
+# This file is not used by default unless you pass it explicitly with -f.
+
+adminUser: "admin"
+adminPassword: "admin"
+flaskSecretKey: "Gidon"
+userName: "Test User"
+themeColor: "dark"
+syncIntervalMins: 5

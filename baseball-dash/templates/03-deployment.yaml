@@ -22,6 +22,16 @@ spec:
         ports:
         - containerPort: 5000
         env:
+        - name: USER_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: baseball-dash-config
+              key: USER_NAME
+        - name: THEME_COLOR
+          valueFrom:
+            configMapKeyRef:
+              name: baseball-dash-config
+              key: THEME_COLOR
         - name: SYNC_INTERVAL_MINS
           valueFrom:
             configMapKeyRef:
@@ -41,6 +51,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: baseball-dash-auth
+              key: FLASK_SECRET_KEY
         resources:
           limits:
             cpu: "500m"
