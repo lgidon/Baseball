@@ -24,6 +24,9 @@ pipeline {
                     . .venv/bin/activate
 
                     pip install -r requirements.txt pytest
+                    export ADMIN_USERNAME='test_admin'
+                    export ADMIN_PASSWORD='test_password'
+                    export SECRET_KEY='super_secret_test_key'
                     pytest tests/ --junitxml=test-reports/results.xml
                 '''
             }
