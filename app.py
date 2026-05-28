@@ -3,9 +3,13 @@ import requests
 from flask import Flask, render_template, request, redirect, url_for, flash
 from config import SETTINGS, requires_auth
 import cache_manager
+from health import health_bp, set_shutting_down
+
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "super-secret-dev-key")
+
+app.register_blueprint(health_bp)
 
 # Fire up our asynchronous caching system background worker on startup
 cache_manager.start_background_worker()
