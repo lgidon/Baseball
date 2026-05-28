@@ -5,15 +5,21 @@ from flask import template_rendered
 from contextlib import contextmanager
 
 # -------------------------------------------------------------------
-# 1. Monkey-patch requires_auth BEFORE importing the app
+# 1. Patch requires_auth where it's actually used, not where it's defined
 # -------------------------------------------------------------------
+# Import the modules first
 import config
-config.requires_auth = lambda f: f   # disable authentication for all tests
-
-# Now it is safe to import the Flask app
-from app import app as flask_app   # flask_app is the Flask instance
-from app import get_dropdown_team_list   # function needed for some tests
+import app
 import cache_manager
+
+# Now patch requires_auth in the app module where it's actually called
+app.requires_auth = lambda f: f  # This patches the imported reference
+
+# If app.py uses 'from config import requires_auth', you might also need:
+# patch.object(app, 'requires_auth', lambda f: f).start()
+
+flask_app = app.app
+from app import get_dropdown_team_list
 import config as config_module
 
 # -------------------------------------------------------------------
@@ -40,7 +46,6 @@ def client():
     with flask_app.test_client() as client:
         with flask_app.app_context():
             yield client
-
 # -------------------------------------------------------------------
 # Tests for get_dropdown_team_list
 # -------------------------------------------------------------------
