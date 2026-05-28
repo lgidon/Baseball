@@ -178,12 +178,16 @@ def test_admin_post_update_settings(mock_start_worker, client):
 def test_admin_post_invalid_sync_interval(mock_start_worker, client):
     original = config_module.SETTINGS.copy()
     try:
-        config_module.SETTINGS['sync_interval_mins'] = 10
+        config_module.SETTINGS.update({
+            'sync_interval_mins': 10,
+            'admin_user': 'test_admin',
+            'admin_password': 'test_password'
+        })
         client.post('/admin', data={
             'user_name': 'Test',
             'theme_color': 'dark',
             'sync_interval_mins': 'not_a_number'
-        }, follow_redirects=True)
+        }, auth=('test_admin', 'test_password'), follow_redirects=True)
         assert config_module.SETTINGS['sync_interval_mins'] == 5
     finally:
         config_module.SETTINGS.clear()
@@ -193,12 +197,16 @@ def test_admin_post_invalid_sync_interval(mock_start_worker, client):
 def test_admin_post_minimum_sync_interval(mock_start_worker, client):
     original = config_module.SETTINGS.copy()
     try:
-        config_module.SETTINGS['sync_interval_mins'] = 5
+        config_module.SETTINGS.update({
+            'sync_interval_mins': 10,
+            'admin_user': 'test_admin',
+            'admin_password': 'test_password'
+        })
         client.post('/admin', data={
             'user_name': 'Fan',
             'theme_color': 'dark',
             'sync_interval_mins': '0'
-        }, follow_redirects=True)
+        }, auth=('test_admin', 'test_password'),follow_redirects=True)
         assert config_module.SETTINGS['sync_interval_mins'] == 1
     finally:
         config_module.SETTINGS.clear()
