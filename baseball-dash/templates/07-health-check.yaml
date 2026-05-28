@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: baseball-dash-{{ .Release.Name }}-health-checker
+  namespace: {{ .Release.Namespace }}
+spec:
+  schedule: "*/2 * * * *" # Runs every other minute
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 4
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: health-checker
+            image: curlimages/curl:latest
+            command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Checking Flask App health..."
+              RESPONSE=$(curl -s --connect-timeout 5 --max-time 10 http://baseball-dash-{{ .Release.Name  }}:80/live)
+              if echo "$RESPONSE" | grep -q "alive"; then
+                echo "HEALTH CHECK PASSED: App is responding correctly."
+              else
+                echo "HEALTH CHECK FAILED: Received unexpected response: $RESPONSE"
+                exit 1
+              fi
+          restartPolicy: OnFailure

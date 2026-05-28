@@ -20,8 +20,8 @@ spec:
             - -c
             - |
               echo "🎯 Warming up roster caches..."
-              curl -s "http://baseball-dash-service/index?team_id=147" > /dev/null
-              curl -s "http://baseball-dash-service/index?team_id=112" > /dev/null
-              curl -s "http://baseball-dash-service/index?team_id=119" > /dev/null
+              curl -s "http://baseball-dash-{{ .Release.Name }}/index?team_id=147" > /dev/null
+              curl -s "http://baseball-dash-{{ .Release.Name }}/index?team_id=112" > /dev/null
+              curl -s "http://baseball-dash-{{ .Release.Name }}/index?team_id=119" > /dev/null
               echo "✅ Cache warming complete."
           restartPolicy: OnFailure
