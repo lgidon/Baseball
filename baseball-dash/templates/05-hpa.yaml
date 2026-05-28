@@ -1,8 +1,8 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: baseball-dash-hpa
-  namespace: default
+  name: baseball-dash-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }} # Best practice: dynamic namespace tracking
 spec:
   scaleTargetRef:
     apiVersion: apps/v1

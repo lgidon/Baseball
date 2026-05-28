@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: prewarm-roster-cache-job
-  namespace: default
+  namespace: {{ .Release.Namespace }} # Best practice: dynamic namespace tracking
 spec:
   schedule: "0 4 * * *"
   concurrencyPolicy: Forbid
