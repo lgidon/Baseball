@@ -4,7 +4,7 @@ from flask import request
 
 # --- GLOBAL SETTINGS & USER PREFERENCES ---
 SETTINGS = {
-    "user_name": "Baseball Fan",
+    "user_name": "Test User",
     "theme_color": "dark",        # Layout accents: dark, primary, success, info, danger
     "sync_interval_mins": 5,      # Frequency of bulk API calls
     "admin_user": os.environ.get("ADMIN_USER", "admin"),
