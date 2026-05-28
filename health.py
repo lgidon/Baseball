@@ -2,6 +2,8 @@
 import time
 from flask import Blueprint, jsonify
 
+print("!!! HEALTH.PY IS ALIVE AND BEING READ !!!")
+
 health_bp = Blueprint('health', __name__)
 _is_shutting_down = False
 

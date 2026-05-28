@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: baseball-dash-{{ .Release.Name }}
+  name: baseball-dash-config-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }} # Best practice: dynamic namespace tracking
 data:
   USER_NAME: {{ .Values.userName | quote }}

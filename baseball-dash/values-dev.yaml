@@ -2,8 +2,8 @@
 # This file is not used by default unless you pass it explicitly with -f.
 
 adminUser: "admin"
-adminPassword: "admin"
+adminPassword: "1234"
 flaskSecretKey: "Gidon"
-userName: "Test User"
+userName: "Gidon"
 themeColor: "dark"
 syncIntervalMins: 5
