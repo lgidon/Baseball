@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: prewarm-roster-cache-job
+  namespace: default
+spec:
+  schedule: "0 4 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: cache-warmer
+            image: curlimages/curl:latest
+            command:
+            - /bin/sh
+            - -c
+            - |
+              echo "🎯 Warming up roster caches..."
+              curl -s "http://baseball-dash-service/index?team_id=147" > /dev/null
+              curl -s "http://baseball-dash-service/index?team_id=112" > /dev/null
+              curl -s "http://baseball-dash-service/index?team_id=119" > /dev/null
+              echo "✅ Cache warming complete."
+          restartPolicy: OnFailure
