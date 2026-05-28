@@ -4,6 +4,11 @@ from unittest.mock import patch, MagicMock
 from flask import template_rendered
 from contextlib import contextmanager
 
+print(f"config.requires_auth: {config.requires_auth}")
+print(f"app.requires_auth: {app.requires_auth}")
+# Check if they're the same object
+print(f"Same object? {config.requires_auth is app.requires_auth}")
+
 # -------------------------------------------------------------------
 # 1. Patch before any app imports
 # -------------------------------------------------------------------
