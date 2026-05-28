@@ -5,22 +5,17 @@ from flask import template_rendered
 from contextlib import contextmanager
 
 # -------------------------------------------------------------------
-# 1. Patch requires_auth where it's actually used, not where it's defined
+# 1. Patch before any app imports
 # -------------------------------------------------------------------
-# Import the modules first
-import config
-import app
-import cache_manager
+# Mock the entire config.requires_auth before importing app
+with patch('config.requires_auth', lambda f: f):
+    from app import app as flask_app
+    from app import get_dropdown_team_list
+    import cache_manager
+    import config as config_module
 
-# Now patch requires_auth in the app module where it's actually called
-app.requires_auth = lambda f: f  # This patches the imported reference
-
-# If app.py uses 'from config import requires_auth', you might also need:
-# patch.object(app, 'requires_auth', lambda f: f).start()
-
-flask_app = app.app
-from app import get_dropdown_team_list
-import config as config_module
+# Keep requires_auth patched for the rest of the test session
+config_module.requires_auth = lambda f: f
 
 # -------------------------------------------------------------------
 # Helper: capture rendered templates for context inspection
