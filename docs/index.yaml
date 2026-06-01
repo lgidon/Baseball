@@ -12,6 +12,6 @@ entries:
     name: baseball-dash
     type: application
     urls:
-    - baseball-dash-0.2.1.tgz
+    - baseball-dash-0.2.2.tgz
     version: 0.2.2
 generated: "2026-05-28T10:28:46.072794668+03:00"
