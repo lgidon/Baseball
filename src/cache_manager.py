@@ -1,8 +1,24 @@
 import datetime
 import threading
 import time
-from config import SETTINGS
+from config import settings
 import mlb_api
+
+# --- Global sync interval management ---
+_current_sync_interval = getattr(settings, 'SYNC_INTERVAL_MINS', 5)
+_sync_interval_lock = threading.Lock()
+
+def set_sync_interval(minutes: int):
+    """Set the sync interval for the background worker."""
+    global _current_sync_interval
+    with _sync_interval_lock:
+        _current_sync_interval = max(1, minutes)
+        print(f"📊 Sync interval updated to {_current_sync_interval} minutes")
+
+def get_sync_interval() -> int:
+    """Get the current sync interval."""
+    with _sync_interval_lock:
+        return _current_sync_interval
 
 # --- HYBRID MEMORY REPOSITORIES ---
 LEAGUE_BULK_CACHE = {"last_updated": None, "games": {}, "standings": {}}
@@ -33,13 +49,6 @@ def refresh_eager_cache():
         LEAGUE_BULK_CACHE["standings"] = standings
     print("✅ Bulk cache refresh complete.")
 
-def background_sync_worker():
-    initialize_league_teams()
-    refresh_eager_cache()
-    while True:
-        interval = max(1, SETTINGS["sync_interval_mins"])
-        time.sleep(interval * 60)
-        refresh_eager_cache()
 
 def start_background_worker():
     worker = threading.Thread(target=background_sync_worker, daemon=True)
@@ -110,3 +119,13 @@ def compile_dashboard_data(team_id):
         'roster': roster,
         'last_updated': bulk["last_updated"]
     }
+
+def background_sync_worker():
+    initialize_league_teams()
+    refresh_eager_cache()
+    while True:
+        # CHANGE THIS LINE - use get_sync_interval() instead of settings
+        interval = max(1, get_sync_interval())  # ✅ Updated
+        print(f"🔄 Background sync sleeping for {interval} minutes")
+        time.sleep(interval * 60)
+        refresh_eager_cache()

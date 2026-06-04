@@ -1,0 +1,40 @@
+# Version control
+.git/
+.gitignore
+.gitattributes
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+
+# Dependencies (usually reinstalled in container)
+node_modules/
+vendor/
+__pycache__/
+*.pyc
+
+# Environment & secrets
+.env
+.env.*
+*.pem
+*.key
+*.crt
+secrets/
+
+# Local configs
+.idea/
+.vscode/
+*.local
+
+# Logs & temp files
+*.log
+*.tmp
+.DS_Store
+dist/
+build/
+
+# Docker files
+Dockerfile
+.dockerignore
+docker-compose*.yml
