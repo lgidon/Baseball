@@ -61,7 +61,7 @@ To minimize external network footprints and bypass MLB API rate limits, data is 
 
 * **Apply the Configuration Manifest (Includes Secrets, Deployments, and Services):**
     ```bash
-    kubectl apply -f k8s-deployment.yaml
+    kubectl apply -f deployment.yaml
     ```
 * **Access App (Standard Local Cluster IP):** Open your web browser to **`http://localhost:30080`**
 * **Access App (Minikube proxy tool wrapper):** ```bash
